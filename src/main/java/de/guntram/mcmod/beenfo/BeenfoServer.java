@@ -43,7 +43,7 @@ public class BeenfoServer {
                 }
             }
         }
-        ((ServerPlayer)player).connection.getConnection().send(
+        ((ServerPlayer)player).connection.connection.send(
             NetworkDirection.PLAY_TO_CLIENT.buildPacket(Pair.of(buf, buf.writerIndex()), S2CPacketIdentifier).getThis()
         );
     }

@@ -4,6 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -45,43 +48,40 @@ public class BeenfoScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) { // render
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) { // render
+        PoseStack stack = guiGraphics.pose();
 
         if (this.minecraft == null) {     // client
             // Not sure why this happens, but it does, spuriously, directly after
             // opening the screen
             return;
         }
-        renderBackground(stack, 0);       // renderBackground
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        this.blit(stack, x, y, 0, 0, 176, 30);
+        renderBackground(guiGraphics);       // renderBackground
+        guiGraphics.blit(TEXTURE, x, y, 0, 0, 176, 30);
         int minRows = Math.max(3, beeNames.size());
         for (int i=0; i<minRows; i++) {
-            blit(stack, x, y+30+i*30, 0, 30, 176, 30);
+            guiGraphics.blit(TEXTURE, x, y+30+i*30, 0, 30, 176, 30);
             if (i < beeNames.size()) {
-                blit(stack, x+9, y+33+(i)*(30), 0, 166, 22, 22);
+                guiGraphics.blit(TEXTURE, x+9, y+33+(i)*(30), 0, 166, 22, 22);
             }
         }
-        this.blit(stack, x, y+30+minRows*30, 0, 157, 176, 8);
+        guiGraphics.blit(TEXTURE, x, y+30+minRows*30, 0, 157, 176, 8);
         
         for (int i=Math.max(5, honeyLevel); i<9; i++) {
-            this.blit(stack, x+7+i*18, y+7, 8, 64, 18, 18);
+            guiGraphics.blit(TEXTURE, x+7+i*18, y+7, 8, 64, 18, 18);
         }
 
         // Do everything that needs our texture above this because drawing a text will bind a different one
 
         for (int i=0; i<beeNames.size(); i++) {
             if (beeNames.get(i) != null) {
-                font.draw(stack, beeNames.get(i).getString(), x+48, y+32+(i)*(30)+8, 0x000000);      //fontRenderer.draw
+                guiGraphics.drawString(font, beeNames.get(i).getString(), x+48, y+32+(i)*(30)+8, 0x000000);      //fontRenderer.draw
             }
         }
-        setBlitOffset(200);                                                // setZLevel?
-        itemRenderer.blitOffset = 200.0F;                                    // itemRenderer
+
         for (int i=0; i<honeyLevel; i++) {
-            itemRenderer.renderGuiItem(honeyBottle, x+8+(i*18), y+8);
+            guiGraphics.renderItem(honeyBottle, x+8+(i*18), y+8, 0, 200);
         }
-        setBlitOffset(0);
-        itemRenderer.blitOffset = 0.0F;
     }
     
     @Override
